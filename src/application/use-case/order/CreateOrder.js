@@ -54,7 +54,7 @@ class CreateOrder {
     }
 
     const order = {
-      usuarioId: cliente,
+      cliente: cliente,
       total,
       estado: 'activo',
       createdAt: new Date(),
