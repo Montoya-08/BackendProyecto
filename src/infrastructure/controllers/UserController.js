@@ -41,16 +41,15 @@ class UserController {
   // Obtener todos los usuarios
   async get(req, res) {
     try {
-      // Ejecuta el caso de uso para obtener todos los usuarios
-      const users = await this.getAllUsers.execute();
-
-      // Responde con la lista de usuarios
+      const users = await UserModel.find({}, 'name email rol createdAt'); // ← incluye createdAt
+      console.log('Usuarios enviados:', users); // Verifica que createdAt aparezca aquí
       res.json(users);
-    } catch (err) {
-      // Si hay error interno, responde con estado 500 y el mensaje
-      res.status(500).json({ error: err.message });
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+      res.status(500).json({ message: 'Error al obtener usuarios' });
     }
   }
+
 
   // Actualizar un usuario por su ID
   async update(req, res) {

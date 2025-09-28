@@ -19,7 +19,7 @@ class AuthController {
   // Registro de usuario
   async register(req, res) {
     // Extrae los datos del cuerpo de la solicitud
-    const { nombre, email, password, rol } = req.body;
+    const { name, email, password, rol, createdAt } = req.body;
 
     try {
       // Verifica si el usuario ya existe por su email
@@ -34,10 +34,11 @@ class AuthController {
 
       // Crea el nuevo usuario en la base de datos
       const newUser = await this.userRepository.create({
-        nombre,
+        name,
         email,
         password: hashedPassword,
         rol,
+        createdAt,
       });
 
       // Responde con éxito y el usuario creado

@@ -30,10 +30,10 @@ class RegisterUser {
 // Esta operación es asíncrona.
 
     const newUser = {
-      nombre: userData.nombre,
+      name: userData.name,
       email: userData.email,
       password: hashedPassword,
-      rol: userData.rol
+      rol: userData.rol,
     };
 // Se construye el objeto 'newUser' que se guardará.
 // **Importante:** Se utiliza el 'hashedPassword' en lugar de la contraseña en texto plano.

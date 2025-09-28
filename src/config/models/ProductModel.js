@@ -4,20 +4,20 @@ import mongoose from "mongoose";
 // Definición del esquema de producto
 const productSchema = new mongoose.Schema({
   // Nombre del producto, obligatorio
-  nombre: {
+  name: {
     type: String,
     required: [true, "El nombre del producto es obligatorio"],
     trim: true
   },
 
   // Descripción opcional del producto
-  descripcion: {
+  description: {
     type: String,
     trim: true
   },
 
   // Precio del producto, obligatorio y debe ser positivo
-  precio: {
+  price: {
     type: Number,
     required: [true, "El precio del producto es obligatorio"],
     min: [0, "El precio no puede ser negativo"]
@@ -31,17 +31,11 @@ const productSchema = new mongoose.Schema({
   },
 
   // Categoría del producto (ej. electrónica, ropa, etc.)
-  categoria: {
+  category: {
     type: String,
     trim: true
   },
-
-  // Fecha de creación del producto, por defecto la fecha actual
-  creadoEn: {
-    type: Date,
-    default: Date.now
-  }
-});
+}, { timestamps: true }); 
 
 // Exporta el modelo de producto para usarlo en otras partes del proyecto
 export default mongoose.model("Product", productSchema);

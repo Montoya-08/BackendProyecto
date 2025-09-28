@@ -34,9 +34,11 @@ class LoginUser {
 
     const payload = {
       id: user.id,
+      name: user.name,
       email: user.email,
       nombre: user.nombre,
-      rol: user.rol
+      rol: user.rol,
+      createdAt: user.createAt
     };
 // Se define el 'payload' (carga útil) del JWT. Contiene información esencial del usuario
 // que se incluirá en el token (ej: id, email, nombre, rol).

@@ -4,6 +4,9 @@ import express from "express";
 // Importa dotenv para cargar variables de entorno desde el archivo .env
 import dotenv from "dotenv";
 
+// Importa cors para habilitar solicitudes entre orígenes
+import cors from "cors"; // Nueva importación
+
 // Importa las rutas de autenticación, productos y órdenes
 import authRoutes from "../infrastructure/routes/authRoutes.js";
 import productRoutes from "../infrastructure/routes/productRoutes.js";
@@ -24,6 +27,13 @@ dotenv.config();
 
 // Crea una instancia de la aplicación Express
 const app = express();
+
+// Configura CORS para permitir solicitudes desde el frontend
+app.use(cors({
+  origin: 'http://localhost:5173', // Permite solo el origen del frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
+}));
 
 // Middleware para parsear JSON en las solicitudes
 app.use(express.json());

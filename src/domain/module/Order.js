@@ -2,18 +2,18 @@
 class Order {
 
   // El constructor recibe un objeto con las propiedades del pedido
-  constructor({ id, cliente, detalles, estado, createdAt }) {
+  constructor({ id, user, details, status, createdAt }) {
     // Identificador único del pedido
     this.id = id;
 
     // Referencia al cliente que realizó el pedido
-    this.cliente = cliente;
+    this.user = user;
 
     // Arreglo de detalles del pedido (productos, cantidades, precios)
-    this.detalles = detalles;
+    this.details = details;
 
     // Estado actual del pedido (ej. activo, cancelado, entregado)
-    this.estado = estado;
+    this.status = status;
 
     // Fecha de creación del pedido
     this.createdAt = createdAt;

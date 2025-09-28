@@ -4,13 +4,13 @@ import mongoose from "mongoose";
 // Define el esquema para los detalles de una orden
 const DetalleSchema = new mongoose.Schema({
   // Referencia al producto asociado (relación con el modelo "Product")
-  productoId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
 
   // Cantidad de unidades del producto en la orden
-  cantidad: Number,
+  quantity: Number,
 
   // Precio por unidad del producto
-  precioUnitario: Number,
+  unitPrice: Number,
 
   // Subtotal calculado (cantidad * precioUnitario)
   subtotal: Number
@@ -19,20 +19,17 @@ const DetalleSchema = new mongoose.Schema({
 // Define el esquema principal para la orden
 const OrderSchema = new mongoose.Schema({
   // Referencia al cliente que hizo la orden (relación con el modelo "Usuario")
-  cliente: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario", required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
   // Arreglo de detalles que contiene los productos de la orden
-  detalles: [DetalleSchema],
+  details: [DetalleSchema],
 
   // Total de la orden (suma de subtotales)
   total: Number,
 
   // Estado de la orden, por defecto "activo"
-  estado: { type: String, default: "activo" },
-
-  // Fecha de creación de la orden, por defecto la fecha actual
-  createdAt: { type: Date, default: Date.now }
-});
+  status: { type: String, default: "activo" },
+}, { timestamps: true }); // activa createdAt y updatedAt
 
 // Exporta el modelo "Order" basado en el esquema definido
 export default mongoose.model("Order", OrderSchema);

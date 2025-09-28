@@ -1,79 +1,87 @@
+// Importa el repositorio de productos, que permite acceder y modificar productos en la base de datos
 import ProductRepository from "../../../domain/repositories/ProductRepository.js";
 
-// Importa el repositorio de productos. Notar que se importa directamente
-// en lugar de inyectarse, lo cual rompe el patrón de Inyección de Dependencias
-// del constructor para esta dependencia específica.
-
+// Define la clase CreateOrder, responsable de procesar y registrar nuevas órdenes
 class CreateOrder {
   constructor(orderRepository) {
+    // Inyección de dependencias: se recibe el repositorio de órdenes desde afuera
     this.orderRepository = orderRepository;
+
+    // Se instancia directamente el repositorio de productos (no se inyecta)
     this.productRepository = new ProductRepository();
   }
-// El constructor recibe el 'orderRepository' (Inyección de Dependencias)
-// y crea una nueva instancia del 'ProductRepository' internamente.
 
+  // Método principal para ejecutar la creación de una orden
   async execute(orderData) {
-// El método 'execute' es el punto de entrada principal para crear el pedido.
-// Es asíncrono debido a las interacciones con los repositorios.
+    // Extrae el usuario y los detalles del pedido desde los datos recibidos
+    const { user, details } = orderData;
 
-    const { cliente, detalles } = orderData;
-// Desestructura los datos de entrada para obtener el ID del cliente y los detalles de los ítems.
-
-    if (!cliente || !detalles || detalles.length === 0) {
-      throw new Error('Cliente y detalles del pedido son obligatorios');
+    // Validación: se asegura de que exista un usuario y al menos un producto en la orden
+    if (!user || !details || details.length === 0) {
+      throw new Error('Usuario y detalles del pedido son obligatorios');
     }
-// Validación inicial: Se asegura de que el cliente y, al menos, un detalle de ítem existan.
 
+    // Inicializa el total de la orden y un arreglo para los detalles enriquecidos
     let total = 0;
     const detallesConPrecio = [];
-// Inicializa la variable 'total' del pedido y un array para almacenar los detalles enriquecidos.
 
-    for (const item of detalles) {
-// Itera sobre cada ítem (producto) del pedido.
+    // Itera sobre cada producto incluido en la orden
+    for (const item of details) {
+      // Busca el producto en la base de datos por su ID
+      const producto = await this.productRepository.findById(item.productId);
 
-      const producto = await this.productRepository.findById(item.productoId);
-// Busca el producto en la base de datos para obtener su información, especialmente el precio.
+      // Si el producto no existe, lanza un error
+      if (!producto) {
+        throw new Error(`Producto no encontrado: ${item.productId}`);
+      }
 
-      if (!producto) throw new Error(`Producto no encontrado: ${item.productoId}`);
-// Lanza un error si alguno de los productos listados en el pedido no existe.
+      // Verifica que haya suficiente stock para la cantidad solicitada
+      if (producto.stock < item.quantity) {
+        throw new Error(`Stock insuficiente para el producto: ${producto.name}`);
+      }
 
-      const precioUnitario = producto.precio;
-      const subtotal = item.cantidad * precioUnitario;
-// Obtiene el precio real del producto y calcula el subtotal de la línea.
+      // Calcula el precio unitario y el subtotal del producto
+      const precioUnitario = producto.price;
+      const subtotal = item.quantity * precioUnitario;
 
+      // Suma el subtotal al total general de la orden
       total += subtotal;
-// Suma el subtotal al total general del pedido.
 
+      // Resta la cantidad solicitada del stock del producto
+      const nuevoStock = producto.stock - item.quantity;
+
+      // Actualiza el producto en la base de datos con el nuevo stock
+      await this.productRepository.update(producto._id, { stock: nuevoStock });
+
+      // Agrega el detalle enriquecido al arreglo final
       detallesConPrecio.push({
-        productoId: item.productoId,
-        cantidad: item.cantidad,
+        productId: item.productId,
+        quantity: item.quantity,
         precioUnitario,
         subtotal
       });
-// Agrega el detalle enriquecido (con precios calculados) al nuevo array.
     }
 
+    // Construye el objeto de la orden con todos los datos necesarios
     const order = {
-      cliente: cliente,
-      total,
-      estado: 'activo',
-      createdAt: new Date(),
-      detalles: detallesConPrecio
+      user,               // ID del cliente que realiza la orden
+      total,                 // Total calculado de la orden
+      status: 'activo',      // Estado inicial de la orden
+      createdAt: new Date(), // Fecha de creación
+      details: detallesConPrecio // Detalles enriquecidos con precio y subtotal
     };
-// Construye el objeto final del pedido, que incluye el total calculado
-// y establece valores por defecto como el 'estado' y la fecha de creación.
 
-    const orderCreado = await this.orderRepository.create(order);
-// Persiste (guarda) el nuevo pedido en la base de datos usando el 'orderRepository'.
+    // Guarda la orden en la base de datos usando el repositorio de órdenes
+    const orderCreada = await this.orderRepository.create(order);
 
+    // Retorna una respuesta con mensaje, ID de la orden creada y el total
     return {
       message: 'Orden creada exitosamente',
-      orderId: orderCreado._id,
+      orderId: orderCreada._id,
       total
     };
-// Retorna un objeto de confirmación que incluye el ID del pedido creado y el total.
   }
 }
 
+// Exporta la clase para que pueda ser utilizada en otros módulos del sistema
 export default CreateOrder;
-// Exporta la clase para su uso.

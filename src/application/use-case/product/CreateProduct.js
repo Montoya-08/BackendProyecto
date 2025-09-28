@@ -13,7 +13,7 @@ class CreateProduct {
 // Recibe un objeto 'productData' que contiene los datos del producto (nombre, precio, etc.).
 
     // Validación básica: nombre y precio son obligatorios
-    if (!productData.nombre || productData.precio == null) {
+    if (!productData.name || productData.price == null) {
       throw new Error('Nombre y precio son obligatorios');
     }
 // Realiza una validación de reglas de negocio: asegura que el 'nombre' sea un valor verdadero
