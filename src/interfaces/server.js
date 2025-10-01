@@ -30,7 +30,7 @@ const app = express();
 
 // Configura CORS para permitir solicitudes desde el frontend
 app.use(cors({
-  origin: 'http://localhost:5173', // Permite solo el origen del frontend
+  origin: ['http://localhost:5173', 'https://synapsestock-4cdce.web.app'], // Permite solo el origen del frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
 }));
